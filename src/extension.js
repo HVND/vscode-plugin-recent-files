@@ -21,8 +21,12 @@ function activate(context) {
   // Now provide the implementation of the command with  registerCommand
   // The commandId parameter must match the command field in package.json
   var disposable = vscode.commands.registerCommand('extension.openRecentFiles', function () {
+    var options = {
+      placeHolder: 'Search'
+    };
+
     // The code you place here will be executed every time your command is executed
-    vscode.window.showQuickPick(file.mapUriToDisplayName(list)).then((item) => {
+    vscode.window.showQuickPick(file.mapUriToDisplayName(list), options).then((item) => {
       handleUserInput(item);
     });
   });
@@ -45,9 +49,9 @@ function deactivate() {
 exports.deactivate = deactivate;
 
 function handleUserInput(item) {
-  if (!item || item.trim === '') return;
+  if (!item || !item.description || item.description.trim === '') return;
   let targetUri = _.findLast(list, (uri) => {
-    return uri.indexOf(item) !== -1;
+    return uri.indexOf(item.description) !== -1;
   })
   if (!targetUri) {
     vscode.window.showWarningMessage("Can't find the file you selected.")
